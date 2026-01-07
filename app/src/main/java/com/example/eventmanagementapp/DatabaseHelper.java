@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log; // Add this import
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String TAG = "DatabaseHelper"; // Add this line
+    private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "EventManagement.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -122,6 +122,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.e(TAG, "Failed to create default admin user");
             }
 
+            // Add demo events
+            addDemoEvents(db);
+
         } catch (Exception e) {
             Log.e(TAG, "Error creating database: " + e.getMessage(), e);
             throw e;
@@ -142,63 +145,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Add this method to check if database is working
-    public boolean isDatabaseReady() {
-        SQLiteDatabase db = null;
-        try {
-            db = this.getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-            int tableCount = cursor.getCount();
-            cursor.close();
-            Log.d(TAG, "Database has " + tableCount + " tables");
-            return tableCount >= 4; // Should have at least 4 tables
-        } catch (Exception e) {
-            Log.e(TAG, "Error checking database: " + e.getMessage(), e);
-            return false;
+    // Add demo events directly in onCreate
+    private void addDemoEvents(SQLiteDatabase db) {
+        Log.d(TAG, "Adding demo Sri Lankan events...");
+
+        // Demo Sri Lankan Events
+        addDemoEvent(db, "Galle Music Festival 2024",
+                "Annual music festival featuring local and international artists at Galle Fort",
+                "2024-03-15", "18:00", "Galle Fort, Galle", 5000.00, 500, 1);
+
+        addDemoEvent(db, "Colombo Food Fest",
+                "Experience the best of Sri Lankan cuisine from all provinces",
+                "2024-03-20", "10:00", "Viharamahadevi Park, Colombo", 2000.00, 300, 1);
+
+        addDemoEvent(db, "Kandy Perahera Exhibition",
+                "Traditional cultural exhibition before the Esala Perahera",
+                "2024-07-25", "14:00", "Kandy City Center", 1500.00, 400, 1);
+
+        addDemoEvent(db, "Sri Lanka Tech Summit",
+                "Technology and innovation conference with industry leaders",
+                "2024-04-10", "09:00", "Cinnamon Grand, Colombo", 8000.00, 200, 1);
+
+        addDemoEvent(db, "Negombo Beach Carnival",
+                "Beach party with DJs, food stalls, and water sports",
+                "2024-05-01", "16:00", "Negombo Beach", 3000.00, 600, 1);
+
+        addDemoEvent(db, "Jaffna Cultural Festival",
+                "Celebrate Tamil culture, food, and traditions",
+                "2024-06-15", "09:00", "Jaffna Public Library", 1000.00, 800, 1);
+
+        Log.d(TAG, "6 demo events added successfully");
+    }
+
+    private void addDemoEvent(SQLiteDatabase db, String name, String description,
+                              String date, String time, String location,
+                              double price, int capacity, int createdBy) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_EVENT_NAME, name);
+        values.put(COLUMN_EVENT_DESCRIPTION, description);
+        values.put(COLUMN_EVENT_DATE, date);
+        values.put(COLUMN_EVENT_TIME, time);
+        values.put(COLUMN_EVENT_LOCATION, location);
+        values.put(COLUMN_EVENT_PRICE, price);
+        values.put(COLUMN_EVENT_CAPACITY, capacity);
+        values.put(COLUMN_CREATED_BY, createdBy);
+
+        long result = db.insert(TABLE_EVENTS, null, values);
+        if (result != -1) {
+            Log.d(TAG, "Demo event added: " + name);
+        } else {
+            Log.e(TAG, "Failed to add demo event: " + name);
         }
     }
 
-    // REMOVE THE DUPLICATE getAllEvents() method - keep only this one:
+    // Get all events - FIXED with _id
+// Get all events - FIXED for SimpleCursorAdapter
     public Cursor getAllEvents() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Log.d(TAG, "Getting all events from database: " + db.getPath());
+        Log.d(TAG, "Getting all events from database");
 
         try {
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_EVENTS, null);
+            // SimpleCursorAdapter REQUIRES a column named "_id"
+            String query = "SELECT " + COLUMN_EVENT_ID + " as _id, " +
+                    COLUMN_EVENT_NAME + ", " +
+                    COLUMN_EVENT_DATE + ", " +
+                    COLUMN_EVENT_LOCATION + ", " +
+                    COLUMN_EVENT_DESCRIPTION + ", " +
+                    COLUMN_EVENT_TIME + ", " +
+                    COLUMN_EVENT_PRICE + ", " +
+                    COLUMN_EVENT_CAPACITY +
+                    " FROM " + TABLE_EVENTS +
+                    " ORDER BY " + COLUMN_EVENT_DATE + " ASC";
+
+            Cursor cursor = db.rawQuery(query, null);
             Log.d(TAG, "Found " + cursor.getCount() + " events");
-
-            // Debug: List all events
-            if (cursor.moveToFirst()) {
-                do {
-                    String eventName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME));
-                    String eventDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EVENT_DATE));
-                    Log.d(TAG, "Event: " + eventName + " on " + eventDate);
-                } while (cursor.moveToNext());
-                cursor.moveToFirst(); // Reset to first position
-            }
-
             return cursor;
         } catch (Exception e) {
             Log.e(TAG, "Error in getAllEvents: " + e.getMessage(), e);
-
-            // Check if table exists
-            Cursor tableCheck = db.rawQuery(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-                    new String[]{TABLE_EVENTS}
-            );
-            boolean tableExists = tableCheck.getCount() > 0;
-            tableCheck.close();
-            Log.d(TAG, "Events table exists: " + tableExists);
-
-            // Return empty cursor if table doesn't exist
-            if (!tableExists) {
-                Log.d(TAG, "Creating empty cursor");
-                return db.rawQuery("SELECT null as " + COLUMN_EVENT_ID +
-                        ", null as " + COLUMN_EVENT_NAME +
-                        ", null as " + COLUMN_EVENT_DATE +
-                        ", null as " + COLUMN_EVENT_LOCATION + " WHERE 0", null);
-            }
-
             throw e;
         }
     }

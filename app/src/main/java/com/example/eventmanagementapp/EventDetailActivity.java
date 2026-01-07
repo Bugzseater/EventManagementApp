@@ -1,4 +1,5 @@
 package com.example.eventmanagementapp;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -65,19 +66,23 @@ public class EventDetailActivity extends AppCompatActivity {
     private void loadEventDetails() {
         Cursor cursor = dbHelper.getEventById(eventId);
         if (cursor.moveToFirst()) {
-            tvEventName.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_NAME)));
-            tvEventDescription.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_DESCRIPTION)));
+            tvEventName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_NAME)));
+            tvEventDescription.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_DESCRIPTION)));
 
-            String dateTime = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_DATE)) + " " +
-                    cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_TIME));
+            String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_DATE)) + " " +
+                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_TIME));
             tvEventDateTime.setText(dateTime);
 
-            tvEventLocation.setText("Location: " + cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_LOCATION)));
+            tvEventLocation.setText("Location: " + cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_LOCATION)));
 
-            eventPrice = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_PRICE));
-            tvEventPrice.setText("Price: $" + eventPrice);
+            eventPrice = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_PRICE));
+            tvEventPrice.setText("Price: Rs. " + String.format("%,.2f", eventPrice));
 
-            tvEventCapacity.setText("Capacity: " + cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_EVENT_CAPACITY)));
+            int capacity = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_CAPACITY));
+            tvEventCapacity.setText("Available Tickets: " + capacity);
+        } else {
+            Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+            finish();
         }
         cursor.close();
     }
@@ -98,7 +103,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
                 if (dbHelper.createBooking(userId, eventId, currentDate, tickets, totalAmount)) {
-                    Toast.makeText(EventDetailActivity.this, "Booking successful!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EventDetailActivity.this, "Booking successful! Total: Rs. " + String.format("%,.2f", totalAmount), Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     Toast.makeText(EventDetailActivity.this, "Booking failed", Toast.LENGTH_SHORT).show();

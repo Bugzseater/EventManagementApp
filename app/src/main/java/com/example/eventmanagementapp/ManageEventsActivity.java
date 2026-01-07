@@ -29,14 +29,6 @@ public class ManageEventsActivity extends AppCompatActivity {
         try {
             // Initialize DatabaseHelper
             dbHelper = new DatabaseHelper(this);
-
-            // Check if database is ready
-            if (!dbHelper.isDatabaseReady()) {
-                Toast.makeText(this, "Database not ready. Please restart app.", Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
-
             Log.d(TAG, "DatabaseHelper initialized successfully");
 
         } catch (Exception e) {
@@ -79,7 +71,7 @@ public class ManageEventsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                    int eventId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_EVENT_ID));
+                    int eventId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
                     Log.d(TAG, "Event clicked, ID: " + eventId);
 
                     Intent intent = new Intent(ManageEventsActivity.this, EventDetailActivity.class);
@@ -102,6 +94,15 @@ public class ManageEventsActivity extends AppCompatActivity {
             Cursor cursor = dbHelper.getAllEvents();
             Log.d(TAG, "Cursor received with " + cursor.getCount() + " items");
 
+            // Debug: Show all column names
+            if (cursor != null) {
+                String[] columns = cursor.getColumnNames();
+                Log.d(TAG, "Cursor columns:");
+                for (String column : columns) {
+                    Log.d(TAG, "  - " + column);
+                }
+            }
+
             String[] from = {
                     DatabaseHelper.COLUMN_EVENT_NAME,
                     DatabaseHelper.COLUMN_EVENT_DATE,
@@ -120,6 +121,11 @@ public class ManageEventsActivity extends AppCompatActivity {
 
             listEvents.setAdapter(adapter);
             Log.d(TAG, "Adapter set on ListView");
+
+            // Show toast if no events
+            if (cursor.getCount() == 0) {
+                Toast.makeText(this, "No events found. Add some events!", Toast.LENGTH_SHORT).show();
+            }
 
         } catch (Exception e) {
             Log.e(TAG, "Error loading events: " + e.getMessage(), e);

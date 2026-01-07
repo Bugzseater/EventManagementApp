@@ -1,6 +1,8 @@
 package com.example.eventmanagementapp;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
     private EditText etEmail, etPassword;
     private Button btnLogin, btnSignUp;
     private DatabaseHelper dbHelper;
@@ -37,6 +40,10 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
             }
         });
+
+        // For testing - auto-fill test user
+        etEmail.setText("testuser@test.com");
+        etPassword.setText("test123");
     }
 
     private void loginUser() {
@@ -48,29 +55,44 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Hardcoded admin credentials
-        if (email.equals("admin") && password.equals("admin123")) {
+        Log.d(TAG, "Login attempt: " + email);
+
+        // First check if it's the hardcoded admin (both email and username)
+        if ((email.equals("admin") || email.equals("admin@event.com")) && password.equals("admin123")) {
+            Log.d(TAG, "Admin login successful");
             Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
             startActivity(intent);
             finish();
             return;
         }
 
-        if (dbHelper.checkUser(email, password)) {
-            String role = dbHelper.getUserRole(email);
-            int userId = dbHelper.getUserId(email);
+        // Check database for regular users
+        try {
+            if (dbHelper.checkUser(email, password)) {
+                Log.d(TAG, "User found in database");
+                String role = dbHelper.getUserRole(email);
+                int userId = dbHelper.getUserId(email);
 
-            Intent intent;
-            if (role != null && role.equals("admin")) {
-                intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                Log.d(TAG, "User role: " + role + ", User ID: " + userId);
+
+                Intent intent;
+                if (role != null && role.equals("admin")) {
+                    Log.d(TAG, "Redirecting to Admin Dashboard");
+                    intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                } else {
+                    Log.d(TAG, "Redirecting to User Dashboard with ID: " + userId);
+                    intent = new Intent(LoginActivity.this, UserDashboardActivity.class);
+                    intent.putExtra("USER_ID", userId);
+                }
+                startActivity(intent);
+                finish();
             } else {
-                intent = new Intent(LoginActivity.this, UserDashboardActivity.class);
-                intent.putExtra("USER_ID", userId);
+                Log.d(TAG, "Invalid credentials");
+                Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
             }
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Login error: " + e.getMessage(), e);
+            Toast.makeText(this, "Login error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }
