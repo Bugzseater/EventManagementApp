@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etEventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Name"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etEventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:inputType="textMultiLine"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:minLines="3"/>
+
+        <EditText
+            android:id="@+id/etEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date (YYYY-MM-DD)"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etEventTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Time (HH:MM)"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etEventLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etEventPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/etEventCapacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Capacity"
+            android:inputType="number"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnSaveEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Event"
+            android:padding="12dp"/>
+
+    </LinearLayout>
+</ScrollView>
