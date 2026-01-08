@@ -10,7 +10,7 @@ import android.util.Log;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "EventManagement.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     // User table
     public static final String TABLE_USERS = "users";
@@ -51,6 +51,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NUMBER_OF_TICKETS = "number_of_tickets";
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
     public static final String COLUMN_BOOKING_STATUS = "booking_status";
+
+    public static final String COLUMN_CARD_NAME = "card_name";
+    public static final String COLUMN_CARD_NUMBER = "card_number";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -105,9 +109,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + COLUMN_BOOKING_DATE + " TEXT,"
                     + COLUMN_NUMBER_OF_TICKETS + " INTEGER,"
                     + COLUMN_TOTAL_AMOUNT + " REAL,"
+                    + COLUMN_CARD_NAME + " TEXT,"
+                    + COLUMN_CARD_NUMBER + " TEXT,"
                     + COLUMN_BOOKING_STATUS + " TEXT DEFAULT 'confirmed')";
             db.execSQL(CREATE_BOOKINGS_TABLE);
             Log.d(TAG, "Bookings table created");
+
+
 
             // Insert default admin user
             ContentValues adminValues = new ContentValues();
@@ -312,17 +320,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Get event by ID
+    // Get event name by ID - Add this to DatabaseHelper class
+    public String getEventNameById(int eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String eventName = null;
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT " + COLUMN_EVENT_NAME +
+                    " FROM " + TABLE_EVENTS +
+                    " WHERE " + COLUMN_EVENT_ID + " = ?";
+
+            cursor = db.rawQuery(query, new String[]{String.valueOf(eventId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                eventName = cursor.getString(0);
+                Log.d(TAG, "Found event name for ID " + eventId + ": " + eventName);
+            } else {
+                Log.d(TAG, "No event found with ID: " + eventId);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting event name: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+
+        return eventName;
+    }
+    // Get event by ID - FIXED version
     public Cursor getEventById(int eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {COLUMN_EVENT_ID, COLUMN_EVENT_NAME, COLUMN_EVENT_DESCRIPTION,
-                COLUMN_EVENT_DATE, COLUMN_EVENT_TIME, COLUMN_EVENT_LOCATION,
-                COLUMN_EVENT_PRICE, COLUMN_EVENT_CAPACITY};
-        String selection = COLUMN_EVENT_ID + " = ?";
-        String[] selectionArgs = {String.valueOf(eventId)};
-
         Log.d(TAG, "Getting event by ID: " + eventId);
-        return db.query(TABLE_EVENTS, columns, selection, selectionArgs, null, null, null);
+
+        try {
+            // Use rawQuery for simplicity
+            String query = "SELECT * FROM " + TABLE_EVENTS +
+                    " WHERE " + COLUMN_EVENT_ID + " = ?";
+
+            Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(eventId)});
+
+            // Debug: Check what columns we got
+            if (cursor != null && cursor.moveToFirst()) {
+                String[] columns = cursor.getColumnNames();
+                Log.d(TAG, "Columns in event cursor:");
+                for (String column : columns) {
+                    Log.d(TAG, "  - " + column);
+                }
+            }
+
+            return cursor;
+        } catch (Exception e) {
+            Log.e(TAG, "Error in getEventById: " + e.getMessage(), e);
+            return null;
+        }
     }
 
     // Update event
@@ -374,50 +427,97 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Get vendors by event ID
     public Cursor getVendorsByEvent(int eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = {COLUMN_VENDOR_ID, COLUMN_VENDOR_NAME,
-                COLUMN_VENDOR_SERVICE, COLUMN_VENDOR_CONTACT};
-        String selection = COLUMN_EVENT_ID_FK + " = ?";
-        String[] selectionArgs = {String.valueOf(eventId)};
+
+        // SimpleCursorAdapter REQUIRES a column named "_id"
+        String query = "SELECT " + COLUMN_VENDOR_ID + " as _id, " +
+                COLUMN_VENDOR_NAME + ", " +
+                COLUMN_VENDOR_SERVICE + ", " +
+                COLUMN_VENDOR_CONTACT +
+                " FROM " + TABLE_VENDORS +
+                " WHERE " + COLUMN_EVENT_ID_FK + " = ?" +
+                " ORDER BY " + COLUMN_VENDOR_NAME + " ASC";
 
         Log.d(TAG, "Getting vendors for event ID: " + eventId);
-        return db.query(TABLE_VENDORS, columns, selection, selectionArgs, null, null, null);
+        return db.rawQuery(query, new String[]{String.valueOf(eventId)});
     }
 
     // Create booking
     public boolean createBooking(int userId, int eventId, String bookingDate,
-                                 int tickets, double totalAmount) {
+                                 int tickets, double totalAmount,
+                                 String cardName, String cardNumber) {
+
         SQLiteDatabase db = this.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_ID_FK, userId);
         values.put(COLUMN_EVENT_ID_FK_BOOKING, eventId);
         values.put(COLUMN_BOOKING_DATE, bookingDate);
         values.put(COLUMN_NUMBER_OF_TICKETS, tickets);
         values.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+        values.put(COLUMN_CARD_NAME, cardName);
+        values.put(COLUMN_CARD_NUMBER, cardNumber);
+        values.put(COLUMN_BOOKING_STATUS, "confirmed");
 
         long result = db.insert(TABLE_BOOKINGS, null, values);
-        Log.d(TAG, "Create booking for user " + userId + ", event " + eventId + ": " + (result != -1));
+
+        if (result == -1) {
+            Log.e(TAG, "Booking insert failed");
+        } else {
+            Log.d(TAG, "Booking successful. ID: " + result);
+        }
+
         return result != -1;
     }
+
 
     // Get all bookings (for admin)
     public Cursor getAllBookings() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.*, u." + COLUMN_USERNAME + ", e." + COLUMN_EVENT_NAME +
-                " FROM " + TABLE_BOOKINGS + " b" +
-                " JOIN " + TABLE_USERS + " u ON b." + COLUMN_USER_ID_FK + " = u." + COLUMN_ID +
-                " JOIN " + TABLE_EVENTS + " e ON b." + COLUMN_EVENT_ID_FK_BOOKING + " = e." + COLUMN_EVENT_ID;
-        Log.d(TAG, "Getting all bookings");
+
+        String query =
+                "SELECT b." + COLUMN_BOOKING_ID + " AS _id, " +
+                        "u." + COLUMN_USERNAME + ", " +
+                        "e." + COLUMN_EVENT_NAME + ", " +
+                        "b." + COLUMN_BOOKING_DATE + ", " +
+                        "b." + COLUMN_NUMBER_OF_TICKETS + ", " +
+                        "b." + COLUMN_TOTAL_AMOUNT + ", " +
+                        "b." + COLUMN_CARD_NAME + ", " +
+                        "b." + COLUMN_CARD_NUMBER +
+                        " FROM " + TABLE_BOOKINGS + " b " +
+                        " JOIN " + TABLE_USERS + " u ON b." + COLUMN_USER_ID_FK + " = u." + COLUMN_ID +
+                        " JOIN " + TABLE_EVENTS + " e ON b." + COLUMN_EVENT_ID_FK_BOOKING + " = e." + COLUMN_EVENT_ID;
+
         return db.rawQuery(query, null);
     }
+
 
     // Get user bookings
     public Cursor getUserBookings(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.*, e." + COLUMN_EVENT_NAME + ", e." + COLUMN_EVENT_DATE +
-                " FROM " + TABLE_BOOKINGS + " b" +
-                " JOIN " + TABLE_EVENTS + " e ON b." + COLUMN_EVENT_ID_FK_BOOKING + " = e." + COLUMN_EVENT_ID +
-                " WHERE b." + COLUMN_USER_ID_FK + " = " + userId;
-        Log.d(TAG, "Getting bookings for user ID: " + userId);
-        return db.rawQuery(query, null);
+
+        String query =
+                "SELECT b." + COLUMN_BOOKING_ID + " AS _id, " +
+                        "e." + COLUMN_EVENT_NAME + ", " +
+                        "e." + COLUMN_EVENT_DATE + ", " +
+                        "b." + COLUMN_BOOKING_DATE + ", " +
+                        "b." + COLUMN_NUMBER_OF_TICKETS + ", " +
+                        "b." + COLUMN_TOTAL_AMOUNT + ", " +
+                        "b." + COLUMN_CARD_NAME + ", " +
+                        "b." + COLUMN_CARD_NUMBER +
+                        " FROM " + TABLE_BOOKINGS + " b " +
+                        " JOIN " + TABLE_EVENTS + " e ON b." + COLUMN_EVENT_ID_FK_BOOKING + " = e." + COLUMN_EVENT_ID +
+                        " WHERE b." + COLUMN_USER_ID_FK + " = ?";
+
+        return db.rawQuery(query, new String[]{String.valueOf(userId)});
     }
+
+    public boolean deleteBooking(int bookingId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_BOOKINGS,
+                COLUMN_BOOKING_ID + " = ?",
+                new String[]{String.valueOf(bookingId)});
+        return result > 0;
+    }
+
+
 }

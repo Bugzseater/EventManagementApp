@@ -42,8 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // For testing - auto-fill test user
-        etEmail.setText("testuser@test.com");
-        etPassword.setText("test123");
+        etEmail.setText("p@gmail.com");
+        etPassword.setText("123");
     }
 
     private void loginUser() {

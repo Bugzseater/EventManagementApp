@@ -27,6 +27,7 @@
         <activity android:name=".MyBookingsActivity" />
         <activity android:name=".ViewBookingsActivity" />
         <activity android:name=".ManageVendorsActivity" />
+        <activity android:name=".AddVendorActivity"/>
 
     </application>
 

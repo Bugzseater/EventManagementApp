@@ -20,7 +20,8 @@ public class EventDetailActivity extends AppCompatActivity {
     private TextView tvEventName, tvEventDescription, tvEventDateTime,
             tvEventLocation, tvEventPrice, tvEventCapacity;
     private LinearLayout bookingSection, adminSection;
-    private EditText etTickets;
+    private EditText etTickets, holderCardName, debitCardNumber;
+
     private Button btnBook, btnEdit, btnDelete;
     private DatabaseHelper dbHelper;
     private int eventId, userId;
@@ -51,6 +52,9 @@ public class EventDetailActivity extends AppCompatActivity {
         btnBook = findViewById(R.id.btnBook);
         btnEdit = findViewById(R.id.btnEdit);
         btnDelete = findViewById(R.id.btnDelete);
+
+        holderCardName = findViewById(R.id.holderCardName);
+        debitCardNumber = findViewById(R.id.debitCardNumber);
 
         loadEventDetails();
 
@@ -88,29 +92,69 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void setupBookingButton() {
-        btnBook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String ticketsStr = etTickets.getText().toString().trim();
-                if (ticketsStr.isEmpty()) {
-                    Toast.makeText(EventDetailActivity.this, "Please enter number of tickets", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        btnBook.setOnClickListener(v -> {
 
-                int tickets = Integer.parseInt(ticketsStr);
-                double totalAmount = tickets * eventPrice;
+            String ticketsStr = etTickets.getText().toString().trim();
+            String cardName = holderCardName.getText().toString().trim();
+            String cardNumber = debitCardNumber.getText().toString().trim();
 
-                String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            // 1️⃣ Validate tickets
+            if (ticketsStr.isEmpty()) {
+                etTickets.setError("Enter ticket count");
+                return;
+            }
 
-                if (dbHelper.createBooking(userId, eventId, currentDate, tickets, totalAmount)) {
-                    Toast.makeText(EventDetailActivity.this, "Booking successful! Total: Rs. " + String.format("%,.2f", totalAmount), Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(EventDetailActivity.this, "Booking failed", Toast.LENGTH_SHORT).show();
-                }
+            int tickets;
+            try {
+                tickets = Integer.parseInt(ticketsStr);
+            } catch (NumberFormatException e) {
+                etTickets.setError("Invalid number");
+                return;
+            }
+
+            if (tickets <= 0) {
+                etTickets.setError("At least 1 ticket required");
+                return;
+            }
+
+            // 2️⃣ Validate card
+            if (cardName.isEmpty()) {
+                holderCardName.setError("Card holder name required");
+                return;
+            }
+
+            if (cardNumber.isEmpty() || cardNumber.length() < 12) {
+                debitCardNumber.setError("Invalid card number");
+                return;
+            }
+
+            // 3️⃣ Calculate total
+            double totalAmount = tickets * eventPrice;
+            String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    .format(new Date());
+
+            // 4️⃣ Save booking
+            boolean success = dbHelper.createBooking(
+                    userId,
+                    eventId,
+                    currentDate,
+                    tickets,
+                    totalAmount,
+                    cardName,
+                    cardNumber
+            );
+
+            if (success) {
+                Toast.makeText(this,
+                        "Booking Successful!\nTotal: Rs. " + String.format("%,.2f", totalAmount),
+                        Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Booking Failed. Try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void setupAdminButtons() {
         btnEdit.setOnClickListener(new View.OnClickListener() {
