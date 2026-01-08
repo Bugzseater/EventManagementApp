@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:background="@drawable/gradient_background"
+    android:padding="10dp"
     android:gravity="center">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/logo" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="Event Management"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -16,29 +25,33 @@
 
     <EditText
         android:id="@+id/etEmail"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/inputfields"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:padding="12dp" />
 
     <EditText
         android:id="@+id/etPassword"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
+        android:background="@drawable/inputfields"
         android:padding="12dp"
         android:layout_marginBottom="24dp"/>
 
     <Button
         android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_log"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:text="Login" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -48,9 +61,10 @@
 
     <Button
         android:id="@+id/btnSignUp"
-        android:layout_width="match_parent"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:padding="12dp"/>
+        android:background="@drawable/btn"
+        android:padding="12dp"
+        android:text="Sign Up" />
 
 </LinearLayout>
