@@ -2,59 +2,97 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#121212"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Vendor"
-            android:textSize="20sp"
+            android:text="New Vendor"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="8dp"/>
 
         <TextView
             android:id="@+id/tvEventName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#BB86FC"
             android:textSize="16sp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="24dp"
+            android:textStyle="italic"/>
 
-        <EditText
-            android:id="@+id/etVendorName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Vendor Name"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <EditText
-            android:id="@+id/etVendorService"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Service"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vendor Details"
+                android:textColor="#9E9E9E"
+                android:textAllCaps="true"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/etVendorContact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contact Number"
-            android:inputType="phone"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp"/>
+            <EditText
+                android:id="@+id/etVendorName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Company/Provider Name"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etVendorService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Service (e.g. Catering, Music)"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etVendorContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contact Number"
+                android:inputType="phone"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/input_bg"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnSaveVendor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Vendor"
-            android:padding="12dp"/>
+            android:layout_height="56dp"
+            android:text="Register Vendor"
+            android:textAllCaps="false"
+            android:background="@drawable/card_bg"
+            android:textColor="#fff"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"/>
 
     </LinearLayout>
 </ScrollView>

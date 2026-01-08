@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ public class ManageEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_events);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         Log.d(TAG, "ManageEventsActivity started");
 
@@ -112,7 +114,7 @@ public class ManageEventsActivity extends AppCompatActivity {
 
             adapter = new SimpleCursorAdapter(
                     this,
-                    android.R.layout.simple_list_item_2,
+                    R.layout.row_event_manage,
                     cursor,
                     from,
                     to,

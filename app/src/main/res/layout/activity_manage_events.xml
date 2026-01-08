@@ -2,20 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#121212"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manage Events"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:paddingTop="60dp"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="16dp"/>
 
     <Button
         android:id="@+id/btnAddEvent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/edittextbg"
         android:text="Add New Event"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        android:textAllCaps="false"
+        android:textColor="#ffff"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/listEvents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"/>
 
 </LinearLayout>

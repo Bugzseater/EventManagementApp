@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -23,6 +24,8 @@ public class ViewEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_events);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
 
         Log.d(TAG, "ViewEventsActivity started");
 
@@ -105,7 +108,7 @@ public class ViewEventsActivity extends AppCompatActivity {
             // Create adapter
             adapter = new SimpleCursorAdapter(
                     this,
-                    android.R.layout.simple_list_item_2,
+                    R.layout.row_event, // Removed "android." and pointed to your custom file
                     cursor,
                     from,
                     to,

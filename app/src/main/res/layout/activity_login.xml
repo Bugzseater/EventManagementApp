@@ -1,70 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0F0F0F"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:background="@drawable/gradient_background"
-    android:padding="10dp"
-    android:gravity="center">
+    android:padding="30dp">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:srcCompat="@drawable/logo" />
+        android:layout_marginTop="100dp"
+        android:src="@drawable/logo" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
         android:text="Event Management"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manage your events effortlessly"
+        android:textColor="#666666"
+        android:textSize="14sp" />
 
     <EditText
         android:id="@+id/etEmail"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/inputfields"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:padding="12dp" />
+        android:paddingHorizontal="20dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#555555" />
 
     <EditText
         android:id="@+id/etPassword"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/inputfields"
         android:hint="Password"
         android:inputType="textPassword"
-        android:background="@drawable/inputfields"
-        android:padding="12dp"
-        android:layout_marginBottom="24dp"/>
+        android:paddingHorizontal="20dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#555555" />
 
     <Button
         android:id="@+id/btnLogin"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/btn_log"
-        android:padding="12dp"
-        android:text="Login" />
+        android:text="Login"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="Don't have an account?"
-        android:layout_marginBottom="8dp"/>
+        android:textColor="#888888" />
 
     <Button
         android:id="@+id/btnSignUp"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
         android:background="@drawable/btn"
-        android:padding="12dp"
-        android:text="Sign Up" />
+        android:text="Create Account"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
 
 </LinearLayout>

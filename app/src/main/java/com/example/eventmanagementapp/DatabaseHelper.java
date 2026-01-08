@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.database.DatabaseUtils;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
@@ -509,6 +510,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         " WHERE b." + COLUMN_USER_ID_FK + " = ?";
 
         return db.rawQuery(query, new String[]{String.valueOf(userId)});
+    }
+
+    public long getEventCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return DatabaseUtils.queryNumEntries(db, TABLE_EVENTS);
+    }
+
+    public long getBookingCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return DatabaseUtils.queryNumEntries(db, TABLE_BOOKINGS);
     }
 
     public boolean deleteBooking(int bookingId) {
